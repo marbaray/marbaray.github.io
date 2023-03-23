@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Exemple de formulaire</title>
+    <style>
+      /* Style pour le formulaire */
+      form {
+        max-width: 500px;
+        margin: 0 auto;
+        padding: 20px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+      }
+
+      /* Style pour les champs de formulaire */
+      label {
+        display: block;
+        font-weight: bold;
+        margin-bottom: 10px;
+      }
+
+      input[type="text"],
+      input[type="email"],
+      textarea {
+        display: block;
+        width: 100%;
+        padding: 10px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        margin-bottom: 20px;
+      }
+
+      input[type="submit"] {
+        background-color: #4CAF50;
+        color: white;
+        padding: 10px 20px;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+      }
+
+      input[type="submit"]:hover {
+        background-color: #45a049;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Remplir le formulaire</h1>
+    <form>
+      <label for="nom">Nom :</label>
+      <input type="text" id="nom" name="nom" placeholder="Entrez votre nom" required>
+
+      <label for="email">Email :</label>
+      <input type="email" id="email" name="email" placeholder="Entrez votre adresse email" required>
+
+      <label for="message">Message :</label>
+      <textarea id="message" name="message" rows="5" placeholder="Entrez votre message"></textarea>
+
+      <input type="submit" value="Envoyer">
+    </form>
+  </body>
+</html>
