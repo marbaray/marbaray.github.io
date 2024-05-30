@@ -1,129 +1,23 @@
 <!DOCTYPE html>
-<html lang="fr">
-
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
     
-    <style>
-        body {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        height: 100vh;
-        margin: 0;
-        background-color: antiquewhite;
-    }
-
-    .form {
-        width: 50%;
-        background-color: aqua;
-        padding: 40px;
-        margin: 10px;
-        border-radius: 10px;
-        text-align: center;
-    }
-    .date{
-        margin: auto;
-        padding: 10px;
-        border: 1px solid #584f4f;
-    }
-    .hD{
-        margin: auto;
-        padding: 10px;
-        border: 1px solid #584f4f;
-    }
-    .hA{
-        margin: auto;
-        padding: 10px;
-        border: 1px solid #584f4f;
-    }
-    .km{
-        margin: auto;
-        padding: 10px;
-        border: 1px solid #584f4f;
-    }
-    .meteo{
-        margin: auto;
-        padding: 10px;
-        border: 1px solid #584f4f;
-    }
-
-    button{
-        background-color: cadetblue;
-        color: white;
-        padding: 10px;
-        transition: 0.5s;
-        cursor: pointer;
-    }
-    .boutton:hover{
-        color: beige;
-        transform: scale(0.9);
-    }
-
-    .varVm {
-        margin: auto;
-        padding: 10px;
-        border: 1px solid #584f4f;
-    }
-
-    .idVar {
-        margin: auto;
-        padding: 10px;
-        border: 1px solid #584f4f;
-    }
-
-    .incident {
-
-        padding: 5px;
-
-    }
-    </style>
 
     <script>
-            
-        let expCondList = [
+        let categoryMeteo = [
+            {"idMeteo":"1", "meteo":"Beau temps"},
+            {"idMeteo":"2", "meteo":"Nuageux"},
+            {"idMeteo":"3", "meteo":"Pluvieux"}
+        ];
+
+        let expList = [
             {"id":"1","dateExpCond":"2024-05-08","heure_depart":"08:00","heure_arrivee":"09:00","kilometrage":"100","idMeteo":"2","idVar2":"3","idVar1":"2"},
             {"id":"2","dateExpCond":"2024-06-08","heure_depart":"07:00","heure_arrivee":"08:00","kilometrage":"10","idMeteo":"1","idVar2":"3","idVar1":"1"},
-            {"id":"3","dateExpCond":"2024-05-08","heure_depart":"08:00","heure_arrivee":"09:00","kilometrage":"100","idMeteo":"3","idVar2":"3"}
+            {"id":"3","dateExpCond":"2024-07-08","heure_depart":"06:00","heure_arrivee":"07:00","kilometrage":"50","idMeteo":"3","idVar2":"3","idVar1":"2"}
         ];
-        
-        let categoryMeteo = [
-            {"idMeteo":"1", "meteo":"Beau temps", "validMeteo1":"1"},
-            {"idMeteo":"2", "meteo":"Nuageux", "validMeteo1":"1"},
-            {"idMeteo":"3", "meteo":"Pluvieux", "validMeteo1":"1"}
-        ];
-
-        let expList = [];
-
-        function save(){
-
-            var dataStringExp = localStorage.getItem('dataExp');
-            if(dataStringExp!=null) expList=JSON.parse(dataStringExp);
-
-            var date = document.getElementById("idDate").value;
-            var heureDepart = document.getElementById("heureDepart").value;
-            var heureArrivee = document.getElementById("heureArrivee").value;
-            var km = parseInt(document.getElementById("km").value);
-            var meteo = document.getElementById("idMeteo").value;
-            var typeRoute = document.getElementById("idVar1").value;
-            var incidents = document.getElementById("idVar2").value;
-
-            var newIDExp=expList.length+1;
-            var newExp={"id":newIDExp, "dateExpCond":date, "heure_depart":heureDepart,
-                "heure_depart":heureDepart, "kilometrage":km, "idMeteo":meteo,
-                "idVar2":incidents, "idVar1":typeRoute
-            };
-            console.log(newExp);
-
-            expList.push(newExp);
-
-            expListString=JSON.stringify(expList);
-            localStorage.setItem('dataExp', expListString);
-            document.getElementById('formulaire').reset();
-
-        }
 
         let categoryVar1 = [
             {"idVar1":"1","type_de_route":"route-normal"},
@@ -132,75 +26,112 @@
 
 
         let categoryVar2 = [{"idVar2":"1", "incident":"OUI"}, {"idVar2":"2", "incident":"NON"}];
-  
+
+        var dataStringExp = localStorage.getItem('dataExp');
+        if (dataStringExp != null) expList = JSON.parse(dataStringExp);
+
+        document.onreadystatechange = function() {
+            if (document.readyState == "complete") {
+                displayExpList();
+            }
+        };
+
+        function displayExpList() {
+            let idExpSum = 0;
+            let sumKm = 0;
+            const meteoCount = {};
+            const var2Count = {};
+            const var1Count = {};
+            /*const meteoCount = {};
+
+           
+            categoryMeteo.forEach(meteo => {
+                meteoCount[meteo.meteo] = 0;
+            });*/
+            
+            categoryMeteo.forEach(meteo => {
+                meteoCount[meteo.meteo] = 0;
+            });
+            //
+            categoryVar1.forEach(item => {
+                meteoCount[item.type_de_route] = 0;
+            });
+
+            let codeHTML = "<table>";
+           
+            expList.forEach(function(item) {
+                idExpSum += 1;
+                sumKm += item.kilometrage;
+
+                let searchIdMeteo = item.idMeteo;
+                let searchMeteo = categoryMeteo.find((categoryElement) => categoryElement.idMeteo == searchIdMeteo).meteo;
+
+               
+                if (searchMeteo in meteoCount) {
+                    meteoCount[searchMeteo] += 1;
+                } else {
+                    meteoCount[searchMeteo] = 1;
+                }
+                //
+
+                let searchIdVar1 = item.idVar1;
+                let searchVar1 = categoryVar1.find((categoryElement) => categoryElement.idVar1 == searchIdVar1).type_de_route;
+
+                
+                if (searchVar1 in var1Count) {
+                    var1Count[searchVar1] += 1;
+                } else {
+                    var1Count[searchVar1] = 1;
+                };
+                //
+
+                codeHTML += '<tr>';
+                codeHTML += `<td>${item.id}</td>`;
+                codeHTML += `<td>${searchMeteo}</td>`;
+                codeHTML += `<td>${item.kilometrage}</td>`;
+                codeHTML += `<td>${searchVar1}</td>`;
+                codeHTML += '</tr>';
+            });
+
+            codeHTML += '</table>';
+            document.getElementById("main").insertAdjacentHTML("afterbegin", codeHTML + '<br>');
+            document.getElementById("main").insertAdjacentHTML("beforeend", `<p style="color: red;">KM Total : ${sumKm}</p>`);
+
+           
+   
+
+            for (let meteo in meteoCount) {
+                if (meteoCount[meteo] > 0) {
+                    document.getElementById("main").insertAdjacentHTML("beforeend", `<p>Nombre d'Expériences pour ${meteo} : ${meteoCount[meteo]}</p>`);
+                }
+            }
+
+
+            for (let var1 in var1Count) {
+                if (var1Count[var1] > 0) {
+                    document.getElementById("main").insertAdjacentHTML("beforeend", `<p>Nombre d'Expériences pour ${var1} : ${var1Count[var1]}</p>`);
+                }
+            }
+
+        }   
     </script>
+    <style>
+        table {
+            table-layout: auto;
+            width: 600px;
+            border: 1px solid black;
+            border-collapse: collapse;
+        }
+        td {
+            border: 1px solid black;
+            padding: 5px;
+        }
+    </style>
 </head>
-
 <body>
-    <form class="form" id="formulaire">
-        <fieldset>
-            <legend style="padding: 10px; color: white;">Experience de conduite </legend>
-        <div class="date">
-            <label for="idDate">Date:</label>
-            <input type="date" id="idDate" name="date" required><br>
-        </div><br>
-
-        <div class="hD">
-            <label for="heureDepart">Heure de départ:</label>
-            <input type="time" id="heureDepart" name="heure_depart" required><br>
-        </div><br>
-
-        <div class="hA">
-            <label for="heureArrivee">Heure d'arrivée:</label>
-            <input type="time" id="heureArrivee" name="heureArrivee" required><br>
-        </div><br>
-
-        <div class="km">
-            <label for="km">Kilométrage parcouru:</label>
-            <input type="number" id="km" name="kilometrage" required><br>
-        </div><br>
-
-        <div class="meteo">
-            <label for="idMeteo">Conditions météo:</label>
-            <select id="idMeteo" name="conditions_meteo" required></select><br>
-        </div><br>
-        <script>
-            categoryMeteo.forEach(function(item) {
-                let option = `<option value="${item.idMeteo}">${item.meteo}</option>`;
-                document.getElementById("idMeteo").insertAdjacentHTML("beforeend", option);
-            });
-        </script>
-
-        <div class="varVm">
-            <label for="idVar1">Type de route:</label>
-            <select id="idVar1" name="type_route" required></select><br>
-        </div><br>
-        <script>
-            categoryVar1.forEach(function(item) {
-                let option = `<option value="${item.idVar1}">${item.type_de_route}</option>`;
-                document.getElementById("idVar1").insertAdjacentHTML("beforeend", option);
-            });
-        </script>
-
-        <div class="incident">
-            <label for="idVar2">Incident:</label>
-            <select id="idVar2" name="incident" required></select>
-        </div><br>
-         <script>
-            categoryVar2.forEach(function(item) {
-                let option = `<option value="${item.idVar2}">${item.incident}</option>`;
-                document.getElementById("idVar2").insertAdjacentHTML("beforeend", option);
-            });
-        </script>
-
-        <div class="boutton">
-            <button type="button" onclick="save()">SAVE</button>
-        </div>
-    </fieldset>
-
-    </form>
-    <a href="file:///C:/Users/marba/OneDrive/Bureau/ProgWeb/pro2/bilan.html" style="text-decoration: none;">Le Bilan</a>
-
+    <section id="main"></section>
+    <a href="https://marbaray.github.io/mst/mst.html" style="text-decoration: none;">Retour au projet</a>
+    
 </body>
-
+</html>
 
